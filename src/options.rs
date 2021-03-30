@@ -28,6 +28,11 @@ pub struct Opt {
     #[structopt(long = "tls")]
     pub tls: bool,
 
+    /// Path to the file where logs will be saved. If not provided, logs are only
+    /// printed to stdout.
+    #[structopt(long = "log-file")]
+    pub log_file: Option<String>,
+
     /// Path to TLS certificate.
     #[structopt(long = "tls-certificate", default_value = "tls_certificate.pem")]
     pub tls_certificate: String,

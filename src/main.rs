@@ -10,12 +10,15 @@ use warp::Filter;
 mod crypto;
 mod errors;
 mod handlers;
+mod logging;
 mod models;
 mod onion_requests;
 mod options;
 mod routes;
 mod rpc;
 mod storage;
+
+use log::info;
 
 #[cfg(test)]
 mod tests;
@@ -32,6 +35,8 @@ async fn main() {
         // Run in command mode
         execute_commands(opt).await;
     } else {
+        logging::init(opt.log_file);
+
         // Run in server mode
         let addr = SocketAddr::new(IpAddr::V4(opt.host), opt.port);
         let localhost = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 3030);
