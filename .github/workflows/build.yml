@@ -19,18 +19,16 @@ jobs:
           ~/.cargo/git
           target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-    - name: Generate key pair
+    - name: Build
       run: |
         openssl genpkey -algorithm x25519 -out x25519_private_key.pem
         openssl pkey -in x25519_private_key.pem -pubout -out x25519_public_key.pem
-    - name: Build
-      run: cargo check --verbose --release
+        cargo check --verbose --release
     - name: Run tests
       run: cargo test --verbose
     - name: Check formatting
       run: cargo fmt -- --check
-    - name: Fix ebbflow cargo-deb version
-      run: cargo install cargo-deb
     - name: Rust Cargo Deb Package Build (amd64, Ubuntu)
+      run: cargo install cargo-deb
       uses: ebbflow-io/cargo-deb-amd64-ubuntu@1.0
 
