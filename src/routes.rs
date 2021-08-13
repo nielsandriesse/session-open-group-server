@@ -104,12 +104,8 @@ pub async fn root_html() -> Result<Response, Rejection> {
 }
 
 pub async fn fallback_html(room: String, query_map: HashMap<String, String>) -> Result<Response, Rejection> {
-    let public_key = match query_map.get("public_key") {
-        Some(val) => val,
-        None => "",
-    };
-    if public_key == "" || room == "" {
-        return Err(warp::reject::not_found())
+    if !query_map.contains_key("public_key") || room == "" {
+        return fallback_nopubkey_html().await
     }
     let body = r#"
     <html>
@@ -142,6 +138,25 @@ pub async fn fallback_html(room: String, query_map: HashMap<String, String>) -> 
                 <li>You're correctly connected to Session</li>
                 <li>Your browser has not accidentally changed HTTP to HTTPS</li>
             </ul>
+        </body>
+    </html>
+    "#;
+    return Ok(warp::reply::html(body).into_response());
+}
+
+pub async fn fallback_nopubkey_html() -> Result<Response, Rejection> {
+    let body = r#"
+    <html>
+        <head>
+            <title>Error</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+        </head>
+        <body>
+            <h1>This link is wrong!</h1>
+            <p>
+                If you're trying to join a Session Open Group Room, this link can not work!<br>
+                It's missing the public key. Make sure you're following a correct room URL.
+            </p>
         </body>
     </html>
     "#;
